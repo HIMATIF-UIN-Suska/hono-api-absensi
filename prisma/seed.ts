@@ -5,32 +5,25 @@ console.log("[INFO] Seeding database...");
 async function main() {
 	console.log("[DEBUG] Running createMany...");
 
-	const resultDosen = await prisma.dosen.createMany({
-		data: [
-			{
-				nip: "2312423143212",
-				nama: "Jane William",
-				email: "jane.william@gmail.com",
-			},
-		],
-		skipDuplicates: true,
-	});
-
-	console.log(
-		"[DEBUG] Result of inserted dosen createMany:",
-		resultDosen.count > 0
-			? resultDosen
-			: "Data was inserted previously, no new data inserted."
-	);
-
 	const resultMahasiswa = await prisma.mahasiswa.createMany({
 		data: [
 			{
-				nim: "12293102930",
-				nama: "John Doe",
-				email: "john.doe@gmail.com",
-				nip: "2312423143212"
+				nim: "12250113521",
+				nama: "M. Farhan Aulia Pratama",
+				email: "12250113521@students.uin-suska.ac.id",
+
 			},
+			{
+				nim: "12250111134",
+				nama: "Muh. Zaki Erbai Syas",
+				email: "12250111134@students.uin-suska.ac.id",
+			},
+			{
+				nim: "12350111224",
+				nama: "As-Siddiqi Pohan",
+				email: "12350111224@students.uin-suska.ac.id",
+			}
+
 		],
 		skipDuplicates: true,
 	});
@@ -38,6 +31,24 @@ async function main() {
 	console.log(
 		"[DEBUG] Result of inserted mahasiswa createMany:",
 		resultMahasiswa.count > 0
+			? resultMahasiswa
+			: "Data was inserted previously, no new data inserted."
+	);
+
+	const resultKartuRfid = await prisma.kartu_rfid.createMany({
+		data: [
+			{
+				id: "E394BC14",
+				status: "ACTIVE",
+				nim: "12250113521",
+			}
+		],
+		skipDuplicates: true,
+	});
+
+	console.log(
+		"[DEBUG] Result of inserted kartu_rfid createMany:",
+		resultKartuRfid.count > 0
 			? resultMahasiswa
 			: "Data was inserted previously, no new data inserted."
 	);
