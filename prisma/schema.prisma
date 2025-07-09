@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model dosen {
+  nip            String           @id @db.VarChar(20)
+  nama           String           @db.VarChar(255)
+  email          String           @unique @db.VarChar(255)
+  mahasiswa      mahasiswa[]
+}
+
+model mahasiswa {
+  nim                String               @id @db.VarChar(11)
+  nama               String               @db.VarChar(255)
+  email              String               @unique @db.VarChar(255)
+  nip                String               @db.VarChar(20)
+  dosen              dosen?               @relation(fields: [nip], references: [nip], onDelete: NoAction, onUpdate: Cascade)
+}
