@@ -3,8 +3,8 @@ import { RegExpRouter } from "hono/router/reg-exp-router";
 import { BlankEnv, BlankSchema } from "hono/types";
 import GlobalHandler from "./handlers/global.handler";
 import globalRoute from "./routes/global.route";
-import mahasiswaRoute from "./routes/mahasiswa.route";
 import LogMiddleware from "./middlewares/log.middleware";
+import kartuRfidRoute from "./routes/kartu-rfid.route";
 
 // Init Hono Object and Load environment variables from .env file
 const app: Hono<BlankEnv, BlankSchema, "/"> = new Hono({
@@ -21,7 +21,7 @@ app.onError(GlobalHandler.error);
 
 // Load all available routes
 app.route("/", globalRoute);
-app.route("/", mahasiswaRoute);
+app.route("/", kartuRfidRoute);
 
 export default {
   port: APP_PORT || 5000,
