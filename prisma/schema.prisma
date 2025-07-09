@@ -8,17 +8,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model dosen {
-  nip            String           @id @db.VarChar(20)
-  nama           String           @db.VarChar(255)
-  email          String           @unique @db.VarChar(255)
-  mahasiswa      mahasiswa[]
+model mahasiswa {
+  nim        String       @id(map: "pk_nim_mahasiswa") @db.VarChar(11)
+  nama       String       @db.VarChar(255)
+  email      String       @unique @db.VarChar(36)
+  kartu_rfid kartu_rfid[] @relation("fk_nim_kartu_rfid")
 }
 
-model mahasiswa {
-  nim                String               @id @db.VarChar(11)
-  nama               String               @db.VarChar(255)
-  email              String               @unique @db.VarChar(255)
-  nip                String               @db.VarChar(20)
-  dosen              dosen?               @relation(fields: [nip], references: [nip], onDelete: NoAction, onUpdate: Cascade)
+model kartu_rfid {
+  id        String                 @id(map: "pk_id_kartu_rfid") @db.VarChar(20)
+  status    type_status_kartu_rfid @default(PENDING)
+  nim       String                 @db.VarChar(11)
+  mahasiswa mahasiswa              @relation("fk_nim_kartu_rfid", fields: [nim], references: [nim], onDelete: NoAction, onUpdate: Cascade, map: "fk_nim_kartu_rfid")
+}
+
+enum type_status_kartu_rfid {
+  PENDING
+  ACTIVE
+  NON_ACTIVE
 }
