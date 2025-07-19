@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { RegExpRouter } from "hono/router/reg-exp-router";
 import { BlankEnv, BlankSchema } from "hono/types";
 import GlobalHandler from "./handlers/global.handler";
@@ -14,6 +15,8 @@ const { APP_PORT }: NodeJS.ProcessEnv = process.env;
 
 // Load all available middlewares
 app.use("*", LogMiddleware.hanzLogger);
+
+app.use("*", cors());
 
 // Load all default routes for common handling
 app.notFound(GlobalHandler.notFound);
