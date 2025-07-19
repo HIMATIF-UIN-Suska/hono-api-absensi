@@ -20,6 +20,16 @@ model kartu_rfid {
   status    type_status_kartu_rfid @default(PENDING)
   nim       String                 @db.VarChar(11)
   mahasiswa mahasiswa              @relation("fk_nim_kartu_rfid", fields: [nim], references: [nim], onDelete: NoAction, onUpdate: Cascade, map: "fk_nim_kartu_rfid")
+
+  absensi   absensi[]
+}
+
+model absensi {
+  id          Int      @id @default(autoincrement())
+  waktu_absen DateTime @default(now())
+  rfid_id     String   @db.VarChar(20)
+
+  kartu       kartu_rfid @relation(fields: [rfid_id], references: [id])
 }
 
 enum type_status_kartu_rfid {
