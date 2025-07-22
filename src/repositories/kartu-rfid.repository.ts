@@ -49,19 +49,46 @@ export default class KartuRfidRepository {
       include: {
         kartu: {
           include: {
-            mahasiswa: true, // Ambil data mahasiswa yang berelasi
+            mahasiswa: {
+              include: {
+                jabatan: true, // Ambil data jabatan yang berelasi
+              },
+            }, // Ambil data mahasiswa yang berelasi
           },
         },
       },
     });
   }
 
-  public static async absensi(rfid_id: string) {
+  public static async findAbsensiByKegiatanToday(
+    rfid_id: string,
+    kegiatan_id: string
+  ) {
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    const absensi = await prisma.absensi.findFirst({
+      where: {
+        rfid_id: rfid_id,
+        kegiatan_id: kegiatan_id,
+        waktu_absen: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+    });
+    return absensi;
+  }
+
+  public static async absensi(rfid_id: string, kegiatan_id: string) {
     try {
       // Membuat data absensi baru sambil menyertakan data dari relasi
       const newAbsensi = await prisma.absensi.create({
         data: {
-          rfid_id,
+          rfid_id: rfid_id,
+          kegiatan_id: kegiatan_id,
+          // waktu_absen akan otomatis diisi oleh @default(now()) dari skema
         },
         // 'include' digunakan untuk mengambil data dari tabel lain yang berelasi
         include: {
