@@ -1,6 +1,7 @@
 import CryptoHelper from "../helpers/crypto.helper";
 import transporter from "../infrastructures/mail.infrastructure";
 import KartuRfidRepository from "../repositories/kartu-rfid.repository";
+import { KegiatanRepository } from "../repositories/kegiatan.repository";
 import { APIError } from "../utils/api-error.util";
 
 export default class KartuRfidService {
@@ -16,7 +17,7 @@ export default class KartuRfidService {
 
     const verificationLink = `http://localhost:5173/aktivasi-kartu/${encryptedPayload}`;
 
-	console.log("DEBUG: Link yang dibuat ->", verificationLink);
+    console.log("DEBUG: Link yang dibuat ->", verificationLink);
     await transporter.sendMail({
       from: `"Dashboard TIF UIN SUSKA" <cert.alisi@gmail.com>`,
       to: nim + "@students.uin-suska.ac.id",
@@ -119,34 +120,57 @@ export default class KartuRfidService {
   }
 
   public static async absensi(rfid_id: string) {
+    // 1. Validasi Kartu RFID (tetap sama)
     const rfid = await KartuRfidRepository.findById(rfid_id);
     if (!rfid) {
       throw new APIError("Waduh, Kartu RFID tidak ditemukan, mas! 😭", 404);
     }
-    if (rfid.status === "PENDING") {
-      throw new APIError("Waduh, Kartu RFID belum terverifikasi, mas! 😭", 400);
-    }
-    if (rfid.status === "NON_ACTIVE") {
-      throw new APIError("Waduh, Kartu RFID sudah tidak aktif, mas! 😭", 400);
-    }
-
-    const existingAbsensiToday = await KartuRfidRepository.findAbsensiToday(
-      rfid_id
-    );
-    if (existingAbsensiToday) {
-      // Jika sudah ada, lempar error
+    if (rfid.status !== "ACTIVE") {
       throw new APIError(
-        "Kamu sudah melakukan absen hari ini, mas! Besok lagi yaa 😉",
+        `Kartu RFID ini berstatus ${rfid.status}, tidak bisa absen!`,
         400
       );
     }
 
-    const absensi_kartu = await KartuRfidRepository.absensi(rfid_id);
-    
+    // 2. Cari kegiatan yang aktif hari ini
+    const today = new Date(); // Mengambil tanggal dan waktu saat ini
+    const kegiatanHariIni = await KegiatanRepository.findActiveByDate(today);
+
+    // 3. Jika tidak ada kegiatan, lempar error
+    if (!kegiatanHariIni) {
+      throw new APIError(
+        "Tidak ada kegiatan hari ini, tunggu event selanjutnyaa 😉",
+        404
+      );
+    }
+
+    // 4. Cek apakah user sudah absen untuk KEGIATAN SPESIFIK hari ini
+    const existingAbsensi =
+      await KartuRfidRepository.findAbsensiByKegiatanToday(
+        rfid_id,
+        kegiatanHariIni.id // Gunakan ID kegiatan yang ditemukan
+      );
+
+    if (existingAbsensi) {
+      throw new APIError(
+        `Kamu sudah absen untuk kegiatan "${kegiatanHariIni.nama}" hari ini, mas! 😉`,
+        400
+      );
+    }
+
+    // 5. Jika semua validasi lolos, buat data absensi baru
+    const absensi_kartu = await KartuRfidRepository.absensi(
+      rfid_id,
+      kegiatanHariIni.id // Masukkan ID kegiatan secara otomatis
+    );
+
     return {
       response: true,
       message: "Absensi berhasil dilakukan, mas! ✅",
-      data: absensi_kartu,
+      data: {
+        ...absensi_kartu,
+        kegiatan: kegiatanHariIni.nama, // Sertakan nama kegiatan di response
+      },
     };
   }
 
