@@ -7,11 +7,18 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+model jabatan {
+  id        String      @id @db.VarChar(11)
+  nama      String      @db.VarChar(255)
+  mahasiswa mahasiswa[]
+}
 
 model mahasiswa {
   nim        String       @id(map: "pk_nim_mahasiswa") @db.VarChar(11)
   nama       String       @db.VarChar(255)
   email      String       @unique @db.VarChar(36)
+  id_jabatan String  @db.VarChar(11)
+  jabatan    jabatan @relation(fields: [id_jabatan], references: [id])
   kartu_rfid kartu_rfid[] @relation("fk_nim_kartu_rfid")
 }
 
@@ -28,8 +35,21 @@ model absensi {
   id          Int      @id @default(autoincrement())
   waktu_absen DateTime @default(now())
   rfid_id     String   @db.VarChar(20)
+  kegiatan_id   String   @db.VarChar(20)
 
   kartu       kartu_rfid @relation(fields: [rfid_id], references: [id])
+  kegiatan   kegiatan  @relation(fields: [kegiatan_id], references: [id])
+}
+
+model kegiatan {
+  
+  id              String    @id @db.VarChar(20)
+  nama            String    @db.VarChar(255)
+  tanggal_mulai   DateTime  @db.Timestamp(6)
+  tanggal_selesai DateTime  @db.Timestamp(6)
+  lokasi          String    @db.VarChar(100)
+
+  absensi         absensi[]
 }
 
 enum type_status_kartu_rfid {
