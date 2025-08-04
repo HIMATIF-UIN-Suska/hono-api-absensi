@@ -6,27 +6,28 @@ async function main() {
 	console.log("[DEBUG] Running createMany...");
 
 	const resultMahasiswa = await prisma.mahasiswa.createMany({
-		data: [
-			{
-				nim: "12250113521",
-				nama: "M. Farhan Aulia Pratama",
-				email: "12250113521@students.uin-suska.ac.id",
-
-			},
-			{
-				nim: "12250111134",
-				nama: "Muh. Zaki Erbai Syas",
-				email: "12250111134@students.uin-suska.ac.id",
-			},
-			{
-				nim: "12350111224",
-				nama: "As-Siddiqi Pohan",
-				email: "12350111224@students.uin-suska.ac.id",
-			}
-
-		],
-		skipDuplicates: true,
-	});
+    data: [
+      {
+        nim: "12250113521",
+        nama: "M. Farhan Aulia Pratama",
+        email: "12250113521@students.uin-suska.ac.id",
+        id_jabatan: "TIF242510",
+      },
+      {
+        nim: "12250111134",
+        nama: "Muh. Zaki Erbai Syas",
+        email: "12250111134@students.uin-suska.ac.id",
+        id_jabatan: "TIF242518",
+      },
+      {
+        nim: "12350111224",
+        nama: "As-Siddiqi Pohan",
+        email: "12350111224@students.uin-suska.ac.id",
+		id_jabatan: "TIF242518",
+      },
+    ],
+    skipDuplicates: true,
+  });
 
 	console.log(
 		"[DEBUG] Result of inserted mahasiswa createMany:",
@@ -65,3 +66,6 @@ main()
 		await prisma.$disconnect();
 		process.exit(0);
 	});
+
+
+	
