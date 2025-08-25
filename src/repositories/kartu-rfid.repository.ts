@@ -47,6 +47,7 @@ export default class KartuRfidRepository {
   public static async getAllAbsensi() {
     return prisma.absensi.findMany({
       include: {
+        kegiatan: true, // Ambil data kegiatan yang berelasi
         kartu: {
           include: {
             mahasiswa: {
