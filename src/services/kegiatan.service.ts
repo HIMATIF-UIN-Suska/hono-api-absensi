@@ -16,4 +16,13 @@ export class KegiatanService {
     });
     return kegiatan;
   }
+
+  public static async getAllKegiatan() {
+    const kegiatan = await prisma.kegiatan.findMany({
+      orderBy: {
+        tanggal_mulai: "desc", // Urutkan berdasarkan tanggal_mulai dari terbaru ke terlama
+      },
+    });
+    return kegiatan;
+  }
 }

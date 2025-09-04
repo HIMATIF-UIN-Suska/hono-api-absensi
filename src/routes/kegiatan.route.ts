@@ -5,5 +5,6 @@ import KartuRfidHandler from "../handlers/kartu-rfid.handler";
 const kegiatanRoute = new Hono({ router: new RegExpRouter() });
 
 kegiatanRoute.post("/kegiatan", KartuRfidHandler.postKegiatan);
+kegiatanRoute.get("/kegiatan", KartuRfidHandler.getKegiatan);
 
 export default kegiatanRoute;

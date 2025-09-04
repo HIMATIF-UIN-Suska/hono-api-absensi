@@ -95,4 +95,9 @@ export default class KartuRfidHandler {
 
   }
 
+  public static async getKegiatan(c: Context) {
+    const all_kegiatan = await KegiatanService.getAllKegiatan();
+    return c.json(all_kegiatan, 200);
+  }
+
 }
