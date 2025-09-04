@@ -7,6 +7,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model jabatan {
   id        String      @id @db.VarChar(11)
   nama      String      @db.VarChar(255)
@@ -17,8 +18,8 @@ model mahasiswa {
   nim        String       @id(map: "pk_nim_mahasiswa") @db.VarChar(11)
   nama       String       @db.VarChar(255)
   email      String       @unique @db.VarChar(36)
-  id_jabatan String  @db.VarChar(11)
-  jabatan    jabatan @relation(fields: [id_jabatan], references: [id])
+  id_jabatan String       @db.VarChar(11)
+  jabatan    jabatan      @relation(fields: [id_jabatan], references: [id])
   kartu_rfid kartu_rfid[] @relation("fk_nim_kartu_rfid")
 }
 
@@ -28,28 +29,27 @@ model kartu_rfid {
   nim       String                 @db.VarChar(11)
   mahasiswa mahasiswa              @relation("fk_nim_kartu_rfid", fields: [nim], references: [nim], onDelete: NoAction, onUpdate: Cascade, map: "fk_nim_kartu_rfid")
 
-  absensi   absensi[]
+  absensi absensi[]
 }
 
 model absensi {
   id          Int      @id @default(autoincrement())
-  waktu_absen DateTime @default(now())
-  rfid_id     String   @db.VarChar(20)
-  kegiatan_id   String   @db.VarChar(20)
+  waktu_absen DateTime @default(now()) @db.Timestamp()
+  id_rfid     String   @db.VarChar(20)
+  id_kegiatan String?  @db.VarChar(20)
 
-  kartu       kartu_rfid @relation(fields: [rfid_id], references: [id])
-  kegiatan   kegiatan  @relation(fields: [kegiatan_id], references: [id])
+  kartu    kartu_rfid @relation(fields: [id_rfid], references: [id])
+  kegiatan kegiatan?  @relation(fields: [id_kegiatan], references: [id])
 }
 
 model kegiatan {
-  
-  id              String    @id @db.VarChar(20)
-  nama            String    @db.VarChar(255)
-  tanggal_mulai   DateTime  @db.Timestamp(6)
-  tanggal_selesai DateTime  @db.Timestamp(6)
-  lokasi          String    @db.VarChar(100)
+  id              String   @id @db.VarChar(20)
+  nama            String   @db.VarChar(255)
+  tanggal_mulai   DateTime @db.Timestamp(6)
+  tanggal_selesai DateTime @db.Timestamp(6)
+  lokasi          String   @db.VarChar(100)
 
-  absensi         absensi[]
+  absensi absensi[]
 }
 
 enum type_status_kartu_rfid {
