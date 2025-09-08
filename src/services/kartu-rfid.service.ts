@@ -180,16 +180,22 @@ export default class KartuRfidService {
       }        
     }
 
+    // 8. Kirim email ke pengurus untuk pemberitahuan sukses absensi
     const mahasiswa = await MahasiswaRepository.findByNIM(rfid.nim);
-
     await transporter.sendMail({
         from: `"HIMA-TIF UIN Suska Riau" <cert.alisi@gmail.com>`,
         to: rfid.nim + "@students.uin-suska.ac.id",
-        subject: "Verification Code",
+        subject: "Absensi Berhasil - HIMATIF UIN Suska Riau",
 
         html: `
             <html>
               <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <title>Notifikasi Absensi</title>
+                  <link rel="preconnect" href="https://fonts.googleapis.com">
+                  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
                   <style>
                       /* --- General Styles --- */
                       body {
@@ -233,15 +239,16 @@ export default class KartuRfidService {
                           text-align: center;
                           margin-bottom: 25px;
                       }
+                      /* DIPERBARUI: Menggunakan line-height untuk vertical centering */
                       .header-icon {
                           width: 60px;
                           height: 60px;
                           background-color: #e8f5e9; /* Light green background for icon */
                           border-radius: 50%;
-                          display: flex;
-                          justify-content: center;
-                          align-items: center;
                           margin: 0 auto 15px;
+                          text-align: center;
+                          line-height: 60px; /* Vertically aligns content */
+                          font-size: 0; /* Removes potential whitespace below image */
                       }
                       .header-title {
                           font-size: 24px;
@@ -273,9 +280,8 @@ export default class KartuRfidService {
                           border-left: none;
                           border-radius: 0;
                       }
+                      /* DIPERBARUI: Menghilangkan flex, karena layout dihandle oleh tabel di HTML */
                       .detail-item {
-                          display: flex;
-                          align-items: center;
                           padding: 15px;
                           background-color: #fdfdfd;
                           border: 1px solid #f0f0f0;
@@ -286,16 +292,14 @@ export default class KartuRfidService {
                       .detail-item:hover {
                           background-color: #f9f9f9;
                       }
-                      .detail-icon {
-                          margin-right: 15px;
-                          flex-shrink: 0;
-                      }
+                      /* DIHAPUS: Class .detail-icon tidak lagi dibutuhkan */
                       .detail-text .label {
                           font-weight: 600;
                           color: #34495e;
                           display: block;
                           font-size: 13px;
                           margin-bottom: 2px;
+                          text-transform: uppercase;
                       }
                       .detail-text .value {
                           color: #2c3e50;
@@ -319,7 +323,8 @@ export default class KartuRfidService {
                           
                           <div class="email-header">
                               <div class="header-icon">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                  <!-- DIPERBARUI: Menambahkan vertical-align untuk kompatibilitas -->
+                                  <img src="https://img.icons8.com/ios-glyphs/32/4CAF50/checkmark--v1.png" alt="Checkmark Icon" width="32" height="32" style="border:0; vertical-align: middle;">
                               </div>
                               <div class="header-title">
                                   Absensi Berhasil
@@ -332,36 +337,55 @@ export default class KartuRfidService {
                               
                               <!-- Data Absensi Ditampilkan di Sini -->
                               <div class="attendance-details">
+                                  <!-- DIPERBARUI: Menggunakan tabel untuk layout yang andal -->
                                   <div class="detail-item">
-                                      <div class="detail-icon">
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3498db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                      </div>
-                                      <div class="detail-text">
-                                          <span class="label">Nama Pengurus</span>
-                                          <span class="value">${mahasiswa!.nama}</span>
-                                      </div>
+                                      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                          <tr>
+                                              <td width="39" valign="middle">
+                                                <img src="https://img.icons8.com/ios-glyphs/24/3498db/user-male-circle.png" alt="User Icon" width="24" height="24" style="border:0; display: block;">
+                                              </td>
+                                              <td valign="middle">
+                                                  <div class="detail-text">
+                                                      <span class="label">Nama Pengurus</span>
+                                                      <span class="value">${mahasiswa!.nama}</span>
+                                                  </div>
+                                              </td>
+                                          </tr>
+                                      </table>
                                   </div>
                                   <div class="detail-item">
-                                      <div class="detail-icon">
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9b59b6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                      </div>
-                                      <div class="detail-text">
-                                          <span class="label">Nama Kegiatan</span>
-                                          <span class="value">${namaKegiatan}</span>
-                                      </div>
+                                      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                          <tr>
+                                              <td width="39" valign="middle">
+                                                <img src="https://img.icons8.com/ios-filled/24/9b59b6/today.png" alt="Calendar Icon" width="24" height="24" style="border:0; display: block;">
+                                              </td>
+                                              <td valign="middle">
+                                                  <div class="detail-text">
+                                                      <span class="label">Nama Kegiatan</span>
+                                                      <span class="value">${namaKegiatan}</span>
+                                                  </div>
+                                              </td>
+                                          </tr>
+                                      </table>
                                   </div>
                                   <div class="detail-item">
-                                      <div class="detail-icon">
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e67e22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                      </div>
-                                      <div class="detail-text">
-                                          <span class="label">Timestamp Absen</span>
-                                          <span class="value">${TimeHelper.getWibTimeString()}</span>
-                                      </div>
+                                      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                          <tr>
+                                              <td width="39" valign="middle">
+                                                  <img src="https://img.icons8.com/ios-filled/24/e67e22/clock.png" alt="Clock Icon" width="24" height="24" style="border:0; display: block;">
+                                              </td>
+                                              <td valign="middle">
+                                                  <div class="detail-text">
+                                                      <span class="label">Timestamp Absen</span>
+                                                      <span class="value">${TimeHelper.getWibTimeString()}</span>
+                                                  </div>
+                                              </td>
+                                          </tr>
+                                      </table>
                                   </div>
                               </div>
                               
-                              <p>Jika Anda merasa ada kesalahan, harap hubungi panitia. Terima kasih. 😊</p>
+                              <p>Jika Anda merasa ada kesalahan, harap hubungi departemen INRISTEK. Terima kasih. 😊</p>
                           </div>
 
                           <div class="email-footer">
