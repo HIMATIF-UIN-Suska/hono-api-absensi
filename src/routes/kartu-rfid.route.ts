@@ -5,7 +5,6 @@ import { zValidator } from "@hono/zod-validator";
 import { postRfidSchema, rfidIdSchema } from "../validators/rfid.validator";
 import KartuRfidHandler from "../handlers/kartu-rfid.handler";
 
-
 const kartuRfidRoute = new Hono({ router: new RegExpRouter() });
 
 kartuRfidRoute.get("/rfid/:id", KartuRfidHandler.get);
