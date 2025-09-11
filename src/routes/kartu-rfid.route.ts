@@ -8,11 +8,10 @@ import KartuRfidHandler from "../handlers/kartu-rfid.handler";
 
 const kartuRfidRoute = new Hono({ router: new RegExpRouter() });
 
-kartuRfidRoute.post("/kartu-rfid", zValidator("json", postRfidSchema, zodError), KartuRfidHandler.post);
-kartuRfidRoute.get("/aktivasi-kartu/:id", KartuRfidHandler.verify);
 kartuRfidRoute.get("/rfid/:id", KartuRfidHandler.get);
-kartuRfidRoute.get("/daftar-absensi", KartuRfidHandler.getAbsensi);
+kartuRfidRoute.post("/kartu-rfid", zValidator("json", postRfidSchema, zodError), KartuRfidHandler.post);
 kartuRfidRoute.post("/rfid/absensi", zValidator("json", rfidIdSchema, zodError), KartuRfidHandler.absensi);
-
+kartuRfidRoute.get("/aktivasi-kartu/:id", KartuRfidHandler.verify);
+kartuRfidRoute.get("/daftar-absensi", KartuRfidHandler.getAbsensi);
 
 export default kartuRfidRoute;
