@@ -40,9 +40,12 @@ export default class KartuRfidHandler {
     try {
       const { id } = c.req.param();
 
+      // remove query api key
+      const idWithoutQuery = id.split("?")[0];
+
       // Proses dekripsi dan verifikasi
-      const iddecoded = CryptoHelper.decryptIDToPayload(id);
-      const verificationResult = await KartuRfidService.verify(iddecoded);
+      const decoded_ID = CryptoHelper.decryptIDToPayload(idWithoutQuery);
+      const verificationResult = await KartuRfidService.verify(decoded_ID);
 
       return c.json(verificationResult, 200);
     } catch (error) {

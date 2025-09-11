@@ -1,7 +1,7 @@
 import CryptoHelper from "../helpers/crypto.helper";
 import TimeHelper from "../helpers/time.helper";
 import transporter from "../infrastructures/mail.infrastructure";
-import KartuRfidRepository from "../repositories/kartu-rfid.repository";
+import KartuRFIDRepository from "../repositories/kartu-rfid.repository";
 import { KegiatanRepository } from "../repositories/kegiatan.repository";
 import { MahasiswaRepository } from "../repositories/mahasiswa.repository";
 import { APIError } from "../utils/api-error.util";
@@ -9,20 +9,20 @@ import { APIError } from "../utils/api-error.util";
 export default class KartuRfidService {
   public static async post(id: string, nim: string) {
     // Check if the RFID already exists
-    const existingRfid = await KartuRfidRepository.findById(id);
+    const existingRfid = await KartuRFIDRepository.findById(id);
     if (existingRfid) {
-      throw new APIError("Waduh, Kartu RFID sudah terdaftar, mas! 😭", 400);
+      throw new APIError("Waduh, Kartu RFID sudah terdaftar, mas!", 400);
     }
 
     const pengurus = await MahasiswaRepository.findByNIM(nim);
     if (!pengurus) {
-      throw new APIError("Waduh, selain pengurus, dilarang daftar, mas! 😭", 404);
+      throw new APIError("Waduh, selain pengurus, dilarang daftar, mas!", 404);
     }
 
-    await KartuRfidRepository.create(id, nim);
+    await KartuRFIDRepository.create(id, nim);
     const encryptedPayload = CryptoHelper.generateEncryptedIDByPayload(id);
 
-    const verificationLink = `${process.env.ACTIVATION_URL}/${encryptedPayload}`;
+    const verificationLink = `${process.env.ACTIVATION_URL}?id=${encryptedPayload}`;
 
     await transporter.sendMail({
       from: `"HIMA-TIF UIN Suska Riau" <cert.alisi@gmail.com>`,
@@ -53,10 +53,6 @@ export default class KartuRfidService {
               </style>
           </head>
           <body style="margin: 0; padding: 0; background-color: #f4f7f6;">
-              <!-- Preheader Text -->
-              <span style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">
-                  Satu langkah lagi untuk mengaktifkan kartu RFID Anda!
-              </span>
               <center>
                   <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto;" class="email-container">
                       <!-- Kartu Konten Email -->
@@ -147,7 +143,7 @@ export default class KartuRfidService {
   }
 
   public static async get(id: string) {
-    const rfid = await KartuRfidRepository.findById(id);
+    const rfid = await KartuRFIDRepository.findById(id);
     if (!rfid) {
       throw new APIError(
         "Waduh, Kartu RFID dirimu kagak jumpa di-database, brosis!, kita daftarin dulu, yak!",
@@ -160,30 +156,30 @@ export default class KartuRfidService {
   public static async absensi(rfid_id: string) {
 
     // 1. Validasi Kartu RFID (tetap sama)
-    const rfid = await KartuRfidRepository.findById(rfid_id);
+    const rfid = await KartuRFIDRepository.findById(rfid_id);
     if (!rfid) {
-      throw new APIError("Waduh, Kartu RFID tidak ditemukan, mas! 😭", 404);
+      throw new APIError("Waduh, Kartu RFID tidak ditemukan, mas!", 404);
     }
     if (rfid.status !== "ACTIVE") {
       throw new APIError(
-        `Kartu RFID ini berstatus ${rfid.status}, tidak bisa absen!`,
+        `Kartu RFID-mu status-nya '${rfid.status}', brosis! Absen-mu kami tangguh-kan!`,
         400
       );
     }
 
     // 2. Cek apakah user sudah absen harian hari ini atau belum
-    const existingAbsensiHarian = await KartuRfidRepository.findAbsensiToday(
+    const existingAbsensiHarian = await KartuRFIDRepository.findAbsensiToday(
       rfid_id
     );
     if (existingAbsensiHarian) {
       throw new APIError(
-        `Kamu sudah absen harian/kegiatan hari ini, mas! 😉`,
+        `Kamu sudah absen, brosis!`,
         400
       );
     }
 
     // 3. Kalau belum ada, buat absensi harian
-    const absensi_kartu = await KartuRfidRepository.absensi(
+    const absensi_kartu = await KartuRFIDRepository.absensi(
       rfid_id
     );
 
@@ -197,14 +193,14 @@ export default class KartuRfidService {
     
       // 6. Jika ada kegiatan, Cek apakah user sudah absen untuk KEGIATAN SPESIFIK hari ini
       const existingAbsensi =
-        await KartuRfidRepository.findAbsensiByKegiatanToday(
+        await KartuRFIDRepository.findAbsensiByKegiatanToday(
           rfid_id,
           kegiatanHariIni.id // Gunakan ID kegiatan yang ditemukan
         );
   
       // 7. Jika belum absen kegiatam, catat absensi kegiatan baru
       if (!existingAbsensi) {
-        await KartuRfidRepository.absensi(
+        await KartuRFIDRepository.absensi(
           rfid_id,
           kegiatanHariIni.id // Masukkan ID kegiatan secara otomatis
         );
@@ -217,7 +213,7 @@ export default class KartuRfidService {
     await transporter.sendMail({
         from: `"HIMA-TIF UIN Suska Riau" <cert.alisi@gmail.com>`,
         to: rfid.nim + "@students.uin-suska.ac.id",
-        subject: "Absensi Berhasil - HIMATIF UIN Suska Riau",
+        subject: "Notifikasi Absensi RFID INRISTEK - HIMATIF UIN Suska Riau",
 
         html: `
             <html>
@@ -331,7 +327,6 @@ export default class KartuRfidService {
                           display: block;
                           font-size: 13px;
                           margin-bottom: 2px;
-                          text-transform: uppercase;
                       }
                       .detail-text .value {
                           color: #2c3e50;
@@ -385,6 +380,22 @@ export default class KartuRfidService {
                                           </tr>
                                       </table>
                                   </div>
+                                  <!-- FIELD JABATAN DENGAN IKON BARU -->
+                                  <div class="detail-item">
+                                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td width="39" valign="middle">
+                                            <img src="https://img.icons8.com/material-outlined/24/3498db/identification-documents.png" alt="Position Icon" width="24" height="24" style="border:0; display: block;">
+                                            </td>
+                                            <td valign="middle">
+                                                <div class="detail-text">
+                                                    <span class="label">Jabatan Pengurus</span>
+                                                    <span class="value">${mahasiswa!.jabatan.nama}</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                  </div>
                                   <div class="detail-item">
                                       <table width="100%" cellpadding="0" cellspacing="0" border="0">
                                           <tr>
@@ -421,7 +432,7 @@ export default class KartuRfidService {
                           </div>
 
                           <div class="email-footer">
-                              Hormat kami,<br/>Tim Riau-DevOps, Aliansi Siber USR, & Inristek 2025
+                              Hormat kami,<br/>Tim Riau-DevOps, Aliansi Siber USR, & INRISTEK 2025
                           </div>
 
                       </div>
@@ -433,7 +444,7 @@ export default class KartuRfidService {
 
     return {
       response: true,
-      message: "Absensi berhasil dilakukan, mas! ✅",
+      message: "Absensi berhasil, brosis!",
       data: {
         ...absensi_kartu,
         kegiatan: namaKegiatan, // Sertakan nama kegiatan di response
@@ -443,7 +454,7 @@ export default class KartuRfidService {
   }
 
   public static async getAllAbsensi() {
-    const all_absensi = await KartuRfidRepository.getAllAbsensi();
+    const all_absensi = await KartuRFIDRepository.getAllAbsensi();
     return {
       response: true,
       message: "Berhasil mendapatkan daftar absensi, mas! ✅",
@@ -452,23 +463,41 @@ export default class KartuRfidService {
   }
 
   public static async verify(id: string) {
-    const rfid = await KartuRfidRepository.findById(id);
+    const rfid = await KartuRFIDRepository.findById(id);
     if (!rfid) {
-      throw new APIError("Waduh, Kartu RFID tidak ditemukan, mas! 😭", 404);
+      throw new APIError("Waduh, Kartu RFID-mu kagak jumpa di-database, brosis!", 404);
     }
     if (rfid.status === "ACTIVE") {
+      const pengurus = await MahasiswaRepository.findByNIM(rfid.nim!);
       return {
         response: true,
-        message: "Kartu RFID ini sudah aktif, mas! ✅",
+        message: "Kartu RFID Telah Aktif!",
+        data: {
+          ...rfid,
+          nama: pengurus!.nama,
+          jabatan: pengurus!.jabatan,
+        },
+      };
+    }
+
+    if (rfid.status === "NON_ACTIVE") {
+      return {
+        response: true,
+        message: "Kartu RFID ini sudah di non-aktifkan, brosis!",
         data: rfid,
       };
     }
 
-    await KartuRfidRepository.updateStatus(id, "ACTIVE");
+    const rfidUpdated = await KartuRFIDRepository.updateStatus(id, "ACTIVE");
+    const pengurus = await MahasiswaRepository.findByNIM(rfidUpdated.nim!);
     return {
       response: true,
-      message: "Kartu RFID berhasil diverifikasi, mas! 🎉",
-      data: rfid,
+      message: "Kartu RFID Telah Aktif!",
+      data: {
+        ...rfidUpdated,
+        nama: pengurus!.nama,
+        jabatan: pengurus!.jabatan,
+      },
     };
   }
 }

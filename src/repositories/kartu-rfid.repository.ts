@@ -1,11 +1,15 @@
 import prisma from "../infrastructures/db.infrastructure";
 
-export default class KartuRfidRepository {
+export default class KartuRFIDRepository {
   public static async create(id: string, nim: string) {
     return prisma.kartu_rfid.create({ data: { id, nim } });
   }
   public static async findById(id: string) {
     return prisma.kartu_rfid.findUnique({ where: { id } });
+  }
+
+  public static async findByNIM(nim: string) {
+    return prisma.kartu_rfid.findFirst({ where: { nim } });
   }
 
   public static async updateStatus(id: string, status: string) {
