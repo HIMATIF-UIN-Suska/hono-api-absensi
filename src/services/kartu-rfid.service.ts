@@ -11,7 +11,7 @@ export default class KartuRfidService {
     // Check if the RFID already exists
     const existingRfid = await KartuRfidRepository.findById(id);
     if (existingRfid) {
-      throw new APIError("Waduh, Kartu RFID sudah ada, mas! 😭", 400);
+      throw new APIError("Waduh, Kartu RFID sudah terdaftar, mas! 😭", 400);
     }
 
     const pengurus = await MahasiswaRepository.findByNIM(nim);
@@ -27,90 +27,122 @@ export default class KartuRfidService {
     await transporter.sendMail({
       from: `"HIMA-TIF UIN Suska Riau" <cert.alisi@gmail.com>`,
       to: nim + "@students.uin-suska.ac.id",
-      subject: "Verification Code",
+      subject: "Aktivasi Kartu RFID Inristek - HIMATIF UIN Suska Riau",
 
       html: `
-        <html>
-            <head>
-                <style>
-                    .email-container {
-                        width: 100%;
-                        padding: 20px;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        background-color: #f9f9f9;
-                    }
-                    .email-card {
-                        width: 100%;
-                        background-color: #fff;
-                        padding: 20px;
-                        border-radius: 10px;
-                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                        font-family: Arial, sans-serif;
-                    }
-                    .email-header {
-                        font-size: 20px;
-                        font-weight: bold;
-                        margin-bottom: 20px;
-                        text-align: center;
-                    }
-                    .email-body {
-                        font-size: 16px;
-                        line-height: 1.5;
-                        margin-bottom: 30px;
-                    }
-                    .email-button {
-                        display: inline-block;
-                        padding: 10px 20px;
-                        font-size: 16px;
-                        color: #ffffff;
-                        background-color: #4CAF50;
-                        text-align: center;
-                        text-decoration: none;
-                        border-radius: 5px;
-                        transition: background-color 0.3s ease;
-                    }
-                    .email-button:hover {
-                        background-color: #298040;
-                    }
-                    .email-footer {
-                        font-size: 14px;
-                        color: #555;
-                        text-align: center;
-                        margin-top: 20px;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="email-container">
-                    <div class="email-card">
-                        <div class="email-header">
-                            📧 Aktivasi Kartu RFID Kepengurusan 📧
-                        </div>
+        <!DOCTYPE html>
+          <html lang="id">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <meta http-equiv="X-UA-Compatible" content="ie=edge">
+              <title>Aktivasi Kartu RFID Kepengurusan</title>
+              <!--[if !mso]><!-->
+              <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+              <!--<![endif]-->
+              <style>
+                  body {
+                      font-family: 'Inter', Arial, sans-serif;
+                  }
+                  @media screen and (max-width: 600px) {
+                      .email-container {
+                          width: 100% !important;
+                          max-width: 100% !important;
+                      }
+                  }
+              </style>
+          </head>
+          <body style="margin: 0; padding: 0; background-color: #f4f7f6;">
+              <!-- Preheader Text -->
+              <span style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">
+                  Satu langkah lagi untuk mengaktifkan kartu RFID Anda!
+              </span>
+              <center>
+                  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 0 auto;" class="email-container">
+                      <!-- Kartu Konten Email -->
+                      <tr>
+                          <td bgcolor="#ffffff" style="border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-top: 4px solid #3B82F6;">
+                              <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                  <!-- Hero Image -->
+                                  <tr>
+                                      <td align="center" style="padding: 30px 0;">
+                                          <img src="https://dashboard-hima.tif.uin-suska.ac.id/assets/Bordered-HIMATIF-Logo.png" alt="[Logo HIMA-TIF]" width="100" style="display: block; border: 0;">
+                                      </td>
+                                  </tr>
 
-                        <div class="email-body">
-                            <h4><i>Halo Sobat HIMA-TIF UIN Suska Riau,</i><span> 😁😉</span></h4>
-                            <p>Terima kasih sebelumnya telah menggunakan absensi berbasis RFID. Silakan klik tombol di bawah ini ya untuk mengaktifkan kartu RFID anda: 👇</p>
-                            <p style="text-align: center;">
-                                <a style="color: #ffffff; text-decoration: none" href="${verificationLink}" class="email-button">Aktifkan Kartu RFID HIMA-TIF</a>
-                            </p>
-                            <p>Jika Anda tidak meminta email ini, abaikan saja. 😊</p>
-                        </div>
-                        <div class="email-footer">
-                            Hormat kami,<br/>Tim Riau-DevOps, Aliansi Siber USR, & Inristek 2025
-                        </div>
-                    </div>
-                </div>
-            </body>
-        </html>
+                                  <!-- Header -->
+                                  <tr>
+                                      <td align="center" style="padding: 0 30px 20px 30px; font-family: 'Inter', Arial, sans-serif; font-size: 20px; font-weight: 700; color: #1a202c;">
+                                          Verifikasi HIMA-TIF e-Card
+                                      </td>
+                                  </tr>
+
+                                  <!-- Body Konten -->
+                                  <tr>
+                                      <td style="padding: 0 16px; font-family: 'Inter', Arial, sans-serif; font-size: 15px; color: #4a5568; line-height: 1.6; text-align: center;">
+                                          <p style="margin: 0 0 16px 0;">
+                                              Halo Sobat HIMA-TIF UIN Suska Riau, 😁
+                                          </p>
+                                          <p style="margin: 0 0 15px 0;">
+                                              Silahkan klik tombol di bawah untuk mengaktifkan kartu RFID anda.
+                                          </p>
+
+                                          <!-- Tombol Aksi (CTA) dengan Ikon -->
+                                          <table border="0" cellspacing="0" cellpadding="0" width="100%">
+                                              <tr>
+                                                  <td align="center">
+                                                      <table border="0" cellspacing="0" cellpadding="0">
+                                                          <tr>
+                                                              <td align="center" style="border-radius: 8px; background-color: #3B82F6; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                                                                  <a href="${verificationLink}" target="_blank" style="font-size: 16px; font-family: 'Inter', Arial, sans-serif; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 8px; padding: 10px 10px; display: inline-block;">
+                                                                      <img src="https://img.icons8.com/ios-glyphs/30/fcf403/rfid-signal.png" alt="[Ikon RFID]" width="25" style="vertical-align: middle; margin-right: 3px; display: inline-block; color: #ffffff;"/>
+                                                                      <span style="vertical-align: middle;">Aktifkan Kartu RFID</span>
+                                                                  </a>
+                                                              </td>
+                                                          </tr>
+                                                      </table>
+                                                  </td>
+                                              </tr>
+                                          </table>
+
+                                          <p style="margin: 15px 0 0 0; font-size: 14px;">
+                                              Jika Anda tidak meminta email ini, abaikan saja. 😊
+                                          </p>
+                                      </td>
+                                  </tr>
+
+                                  <!-- Garis Pemisah -->
+                                  <tr>
+                                      <td style="padding: 10px 0 20px 0;">
+                                          <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                              <tr>
+                                                  <td height="1" style="border-bottom: 1px solid #e2e8f0;"></td>
+                                              </tr>
+                                          </table>
+                                      </td>
+                                  </tr>
+
+                                  <!-- Footer -->
+                                  <tr>
+                                      <td align="center" style="padding: 0 20px 30px 20px; font-family: 'Inter', Arial, sans-serif; font-size: 14px; color: #718096; line-height: 1.5;">
+                                          Hormat kami,<br>
+                                          <span style="font-weight: 600;">Tim Riau-DevOps, Aliansi Siber USR, & INRISTEK 2025</span>
+                                      </td>
+                                  </tr>
+                              </table>
+                          </td>
+                      </tr>
+                  </table>
+              </center>
+          </body>
+          </html>
         `,
     });
 
     return {
       response: true,
       message:
-        "Kartu RFID berhasil dibuat, mas! Silahkan cek email kamu untuk aktivasi. 📧",
+        "Kartu RFID berhasil terdaftar, brosis! Silahkan cek email dirimu untuk aktivasi.",
     };
   }
 
@@ -118,7 +150,7 @@ export default class KartuRfidService {
     const rfid = await KartuRfidRepository.findById(id);
     if (!rfid) {
       throw new APIError(
-        "Waduh, Kartu RFID tidak ditemukan, mas!, silahkan registrasi 😭",
+        "Waduh, Kartu RFID dirimu kagak jumpa di-database, brosis!, kita daftarin dulu, yak!",
         404
       );
     }
