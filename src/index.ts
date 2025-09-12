@@ -5,7 +5,7 @@ import { BlankEnv, BlankSchema } from "hono/types";
 import GlobalHandler from "./handlers/global.handler";
 import globalRoute from "./routes/global.route";
 import LogMiddleware from "./middlewares/log.middleware";
-import kartuRfidRoute from "./routes/kartu-rfid.route";
+import kartuRFIDRoute from "./routes/kartu-rfid.route";
 import kegiatanRoute from "./routes/kegiatan.route";
 
 // Init Hono Object and Load environment variables from .env file
@@ -25,7 +25,7 @@ app.onError(GlobalHandler.error);
 
 // Load all available routes
 app.route("/", globalRoute);
-app.route("/", kartuRfidRoute);
+app.route("/", kartuRFIDRoute);
 app.route("/", kegiatanRoute)
 
 export default {
