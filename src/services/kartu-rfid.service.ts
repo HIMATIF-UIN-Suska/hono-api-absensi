@@ -6,7 +6,7 @@ import { KegiatanRepository } from "../repositories/kegiatan.repository";
 import { MahasiswaRepository } from "../repositories/mahasiswa.repository";
 import { APIError } from "../utils/api-error.util";
 
-export default class KartuRfidService {
+export default class KartuRFIDService {
 	public static async post(id: string, nim: string) {
 		// Check if the RFID already exists
 		const existingRfid = await KartuRFIDRepository.findById(id);

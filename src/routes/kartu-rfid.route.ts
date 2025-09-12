@@ -3,14 +3,14 @@ import { RegExpRouter } from "hono/router/reg-exp-router";
 import { zodError } from "../utils/zod-error.util";
 import { zValidator } from "@hono/zod-validator";
 import { postRfidSchema, rfidIdSchema } from "../validators/rfid.validator";
-import KartuRfidHandler from "../handlers/kartu-rfid.handler";
+import KartuRFIDHandler from "../handlers/kartu-rfid.handler";
 
 const kartuRfidRoute = new Hono({ router: new RegExpRouter() });
 
-kartuRfidRoute.get("/rfid/:id", KartuRfidHandler.get);
-kartuRfidRoute.post("/kartu-rfid", zValidator("json", postRfidSchema, zodError), KartuRfidHandler.post);
-kartuRfidRoute.post("/rfid/absensi", zValidator("json", rfidIdSchema, zodError), KartuRfidHandler.absensi);
-kartuRfidRoute.get("/aktivasi-kartu/:id", KartuRfidHandler.verify);
-kartuRfidRoute.get("/daftar-absensi", KartuRfidHandler.getAbsensi);
+kartuRfidRoute.get("/rfid/:id", KartuRFIDHandler.get);
+kartuRfidRoute.post("/kartu-rfid", zValidator("json", postRfidSchema, zodError), KartuRFIDHandler.post);
+kartuRfidRoute.post("/rfid/absensi", zValidator("json", rfidIdSchema, zodError), KartuRFIDHandler.absensi);
+kartuRfidRoute.get("/aktivasi-kartu/:id", KartuRFIDHandler.verify);
+kartuRfidRoute.get("/daftar-absensi", KartuRFIDHandler.getAbsensi);
 
 export default kartuRfidRoute;

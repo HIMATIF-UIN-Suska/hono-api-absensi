@@ -1,13 +1,13 @@
 import { Context } from "hono";
 import { APIError } from "../utils/api-error.util";
-import KartuRfidService from "../services/kartu-rfid.service";
+import KartuRFIDService from "../services/kartu-rfid.service";
 import CryptoHelper from "../helpers/crypto.helper";
 import { KegiatanService } from "../services/kegiatan.service";
 
-export default class KartuRfidHandler {
+export default class KartuRFIDHandler {
   public static async post(c: Context) {
     const { id, nim } = await c.req.json();
-    return c.json(await KartuRfidService.post(id, nim), 201);
+    return c.json(await KartuRFIDService.post(id, nim), 201);
   }
 
   public static async absensi(c: Context) {
@@ -16,7 +16,7 @@ export default class KartuRfidHandler {
     if (!rfid_id) {
       throw new APIError("Waduh, ID tidak boleh kosong, mas! 😭", 400);
     }
-     const result = await KartuRfidService.absensi(rfid_id);
+     const result = await KartuRFIDService.absensi(rfid_id);
 
      // Kembalikan hasil sukses dari service
      return c.json(result, 200);
@@ -27,12 +27,12 @@ export default class KartuRfidHandler {
     if (!id) {
       throw new APIError("Waduh, ID tidak boleh kosong, mas! 😭", 400);
     }
-    const rfid = await KartuRfidService.get(id);
+    const rfid = await KartuRFIDService.get(id);
     return c.json(rfid, 200);
   }
 
   public static async getAbsensi(c: Context) {
-    const all_absensi = await KartuRfidService.getAllAbsensi();
+    const all_absensi = await KartuRFIDService.getAllAbsensi();
     return c.json(all_absensi, 200);
   }
 
@@ -45,7 +45,7 @@ export default class KartuRfidHandler {
 
       // Proses dekripsi dan verifikasi
       const decoded_ID = CryptoHelper.decryptIDToPayload(idWithoutQuery);
-      const verificationResult = await KartuRfidService.verify(decoded_ID);
+      const verificationResult = await KartuRFIDService.verify(decoded_ID);
 
       return c.json(verificationResult, 200);
     } catch (error) {
