@@ -19,6 +19,11 @@ export default class KartuRfidService {
 			throw new APIError("Waduh, selain pengurus, dilarang daftar, mas!", 404);
 		}
 
+        const nimTelahTerkait = await KartuRFIDRepository.findByNIM(nim);
+        if (nimTelahTerkait) {
+            throw new APIError("Waduh, NIM ini sudah terkait dengan kartu RFID lain, mas!", 400);
+        }
+
 		await KartuRFIDRepository.create(id, nim);
 		const encryptedPayload = CryptoHelper.generateEncryptedIDByPayload(id);
 
