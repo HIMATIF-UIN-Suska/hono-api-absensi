@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "kartu_rfid" ADD COLUMN     "waktu_aktivasi" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP;

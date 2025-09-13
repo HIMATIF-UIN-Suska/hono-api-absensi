@@ -24,10 +24,12 @@ model mahasiswa {
 }
 
 model kartu_rfid {
-  id        String                 @id(map: "pk_id_kartu_rfid") @db.VarChar(20)
-  status    type_status_kartu_rfid @default(PENDING)
-  nim       String                 @db.VarChar(11)
-  mahasiswa mahasiswa              @relation("fk_nim_kartu_rfid", fields: [nim], references: [nim], onDelete: NoAction, onUpdate: Cascade, map: "fk_nim_kartu_rfid")
+  id             String                 @id(map: "pk_id_kartu_rfid") @db.VarChar(20)
+  status         type_status_kartu_rfid @default(PENDING)
+  nim            String                 @db.VarChar(11)
+  waktu_aktivasi DateTime               @default(now()) @db.Timestamp(6)
+
+  mahasiswa mahasiswa @relation("fk_nim_kartu_rfid", fields: [nim], references: [nim], onDelete: NoAction, onUpdate: Cascade, map: "fk_nim_kartu_rfid")
 
   absensi absensi[]
 }
