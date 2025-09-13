@@ -112,7 +112,7 @@ export default class KartuRFIDRepository {
         nim: newAbsensi.kartu.mahasiswa.nim,
         nama: newAbsensi.kartu.mahasiswa.nama,
         id_rfid: newAbsensi.id_rfid,
-        date: newAbsensi.waktu_absen,
+        waktu_absen: newAbsensi.waktu_absen,
       };
 
       return result;

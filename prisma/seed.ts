@@ -462,6 +462,23 @@ async function main() {
 			? resultKartuRfid
 			: "Data was inserted previously, no new data inserted."
 	);
+
+	const resultKegiatan = await prisma.kegiatan.upsert({
+		// Kriteria untuk mencari data duplikat
+		where: {
+			id: "20250101-1111",
+		},
+		// Jika data ditemukan, jangan lakukan apa-apa
+		update: {},
+		// Jika data tidak ditemukan, buat data baru
+		create: {
+			id: "20250101-1111",
+			nama: "Absensi Harian",
+			lokasi: "Sekretariat HIMATIF UIN Suska Riau, GB-FST LT.2",
+		},
+	});
+
+	console.log("[DEBUG] Result of upserted kegiatan:", resultKegiatan);
 }
 
 main()

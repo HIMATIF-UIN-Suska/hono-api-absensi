@@ -180,12 +180,13 @@ export default class KartuRFIDService {
 		}
 
 		// 3. Kalau belum ada, buat absensi harian
-		const absensi_kartu = await KartuRFIDRepository.absensi(rfid_id);
+		const absensi_kartu = await KartuRFIDRepository.absensi(rfid_id, '20250101-1111');
 
 		// 4. Cari ada kegiatan apa saja yang sedang aktif hari ini
 		const today = new Date(); // Mengambil tanggal dan waktu saat ini
 		const kegiatanHariIni = await KegiatanRepository.findActiveByDate(today);
 		let namaKegiatan = "Absensi Harian";
+        let lokasiKegiatan = "Sekretariat HIMATIF UIN Suska Riau, GB-FST LT.2";
 
 		// 5. Jika ada kegiatan, cek apakah user sudah absen untuk kegiatan tersebut atau belum
 		if (kegiatanHariIni) {
@@ -203,6 +204,7 @@ export default class KartuRFIDService {
 					kegiatanHariIni.id // Masukkan ID kegiatan secara otomatis
 				);
 				namaKegiatan = kegiatanHariIni.nama;
+                lokasiKegiatan = kegiatanHariIni.lokasi;
 			}
 		}
 
@@ -234,7 +236,7 @@ export default class KartuRFIDService {
                     /* --- Email Container --- */
                     .email-container {
                         width: 100%;
-                        padding: 20px;
+                        padding: 5px;
                         display: flex;
                         justify-content: center;
                         align-items: center;
@@ -248,7 +250,7 @@ export default class KartuRFIDService {
                         width: 100%;
                         max-width: 600px;
                         background-color: #ffffff;
-                        padding: 30px;
+                        padding: 20px;
                         border-radius: 16px; /* More rounded corners */
                         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 5px 10px rgba(0, 0, 0, 0.02); /* Softer, layered shadow */
                         border: 1px solid #f0f0f0;
@@ -357,8 +359,8 @@ export default class KartuRFIDService {
                         </div>
 
                         <div class="email-body">
-                            <p class="greeting">Halo Sobat HIMA-TIF UIN Suska Riau,</p>
-                            <p>Terima kasih, absensi Anda telah berhasil kami catat. Berikut adalah rinciannya:</p>
+                            <p class="greeting">Halo Sobat HIMA-TIF UIN Suska Riau 💙🤍</p>
+                            <p>Absensi Anda telah berhasil kami catat. Berikut adalah rinciannya:</p>
                             
                             <!-- Data Absensi Ditampilkan di Sini -->
                             <div class="attendance-details">
@@ -373,8 +375,8 @@ export default class KartuRFIDService {
                                                 <div class="detail-text">
                                                     <span class="label">Nama Pengurus</span>
                                                     <span class="value">${
-                                                                                                                mahasiswa!.nama
-                                                                                                            }</span>
+                                                        mahasiswa!.nama
+                                                    }</span>
                                                 </div>
                                             </td>
                                         </tr>
@@ -391,8 +393,8 @@ export default class KartuRFIDService {
                                                 <div class="detail-text">
                                                     <span class="label">Jabatan Pengurus</span>
                                                     <span class="value">${
-                                                                                                            mahasiswa!.jabatan.nama
-                                                                                                        }</span>
+                                                        mahasiswa!.jabatan.nama
+                                                    }</span>
                                                 </div>
                                             </td>
                                         </tr>
@@ -408,6 +410,21 @@ export default class KartuRFIDService {
                                                 <div class="detail-text">
                                                     <span class="label">Nama Kegiatan</span>
                                                     <span class="value">${namaKegiatan}</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="detail-item">
+                                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                        <tr>
+                                            <td width="39" valign="middle">
+                                                <img src="https://img.icons8.com/ios-filled/24/9b59b6/marker.png" alt="Location Icon" width="24" height="24" style="border:0; display: block;">
+                                            </td>
+                                            <td valign="middle">
+                                                <div class="detail-text">
+                                                    <span class="label">Lokasi Kegiatan</span>
+                                                    <span class="value">${lokasiKegiatan}</span>
                                                 </div>
                                             </td>
                                         </tr>
@@ -449,7 +466,8 @@ export default class KartuRFIDService {
 			message: "Absensi berhasil, brosis!",
 			data: {
 				...absensi_kartu,
-				kegiatan: namaKegiatan, // Sertakan nama kegiatan di response
+				nama_kegiatan: namaKegiatan, // Sertakan nama kegiatan di response
+                lokasi_kegiatan: lokasiKegiatan,
 			},
 		};
 	}

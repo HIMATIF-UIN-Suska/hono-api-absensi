@@ -43,11 +43,11 @@ model absensi {
 }
 
 model kegiatan {
-  id              String   @id @db.VarChar(20)
-  nama            String   @db.VarChar(255)
-  tanggal_mulai   DateTime @db.Timestamp(6)
-  tanggal_selesai DateTime @db.Timestamp(6)
-  lokasi          String   @db.VarChar(100)
+  id              String    @id @db.VarChar(20)
+  nama            String    @db.VarChar(255)
+  tanggal_mulai   DateTime? @db.Timestamp(6)
+  tanggal_selesai DateTime? @db.Timestamp(6)
+  lokasi          String    @db.VarChar(100)
 
   absensi absensi[]
 }

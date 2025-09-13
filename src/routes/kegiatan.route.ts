@@ -1,10 +1,10 @@
 import { Hono } from "hono";
 import { RegExpRouter } from "hono/router/reg-exp-router";
-import KartuRfidHandler from "../handlers/kartu-rfid.handler";
+import KegiatanHandler from "../handlers/kegiatan.handler";
 
 const kegiatanRoute = new Hono({ router: new RegExpRouter() });
 
-kegiatanRoute.post("/kegiatan", KartuRfidHandler.postKegiatan);
-kegiatanRoute.get("/kegiatan", KartuRfidHandler.getKegiatan);
+kegiatanRoute.post("/web/kegiatan", KegiatanHandler.postKegiatan);
+kegiatanRoute.get("/web/kegiatan", KegiatanHandler.getKegiatan);
 
 export default kegiatanRoute;
